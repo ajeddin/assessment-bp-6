@@ -1,19 +1,18 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
+const cors = require('cors')
+app.use(express.json())
+app.use(cors())
 const {bots, playerRecord} = require('./data')
 const {shuffleArray} = require('./utils')
-const cors = require('cors')
-var Rollbar = require("rollbar");
-app.use(cors())
 app.use(express.static('public'))
-app.use(express.json())
-require('dotenv').config()
+var Rollbar = require("rollbar");
 const {ROLLBAR_KEY} = process.env
 
-module.exports={
-    Rollbar
-}
-
+app.get('/',(req,res)=>{
+    res.sendFile(path.join(__dirname,'../public/index.html'))
+})
 app.get('/api/robots', (req, res) => {
     try {
         res.status(200).send(bots)
