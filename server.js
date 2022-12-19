@@ -10,12 +10,17 @@ app.use(express.json())
 require('dotenv').config()
 const {ROLLBAR_KEY} = process.env
 
+module.exports={
+    Rollbar
+}
 
 app.get('/api/robots', (req, res) => {
     try {
         res.status(200).send(bots)
     } catch (error) {
         console.log('ERROR GETTING BOTS', error)
+        rollbar.error("ERROR GETTING BOTS")
+
         res.sendStatus(400)
     }
 })
@@ -28,6 +33,8 @@ app.get('/api/robots/five', (req, res) => {
         res.status(200).send({choices, compDuo})
     } catch (error) {
         console.log('ERROR GETTING FIVE BOTS', error)
+        rollbar.error("More than 5 robots")
+
         res.sendStatus(400)
     }
 })
@@ -52,19 +59,23 @@ app.post('/api/duel', (req, res) => {
         // comparing the total health to determine a winner
         if (compHealthAfterAttack > playerHealthAfterAttack) {
             playerRecord.losses++
+            rollbar.log('you lost')
             res.status(200).send('You lost!')
         } else {
-            playerRecord.losses++
+            playerRecord.wins++
+            rollbar.log('you won')
             res.status(200).send('You won!')
         }
     } catch (error) {
         console.log('ERROR DUELING', error)
+        rollbar.warn('error dueling')
         res.sendStatus(400)
     }
 })
 
 app.get('/api/player', (req, res) => {
     try {
+        rollbar.debug('sent players')
         res.status(200).send(playerRecord)
     } catch (error) {
         console.log('ERROR GETTING PLAYER STATS', error)
