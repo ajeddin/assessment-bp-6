@@ -9,6 +9,11 @@ const {shuffleArray} = require('./utils')
 app.use(express.static('public'))
 var Rollbar = require("rollbar");
 const {ROLLBAR_KEY} = process.env
+var rollbar = new Rollbar({
+  accessToken:ROLLBAR_KEY,
+  captureUncaught: true,
+  captureUnhandledRejections: true
+});
 
 app.get('/',(req,res)=>{
     res.sendFile(path.join(__dirname,'../public/index.html'))
@@ -85,10 +90,5 @@ app.get('/api/player', (req, res) => {
 app.listen(4000, () => {
   console.log(`Listening on 4000`)
 })
-var rollbar = new Rollbar({
-  accessToken:ROLLBAR_KEY,
-  captureUncaught: true,
-  captureUnhandledRejections: true
-});
 
 rollbar.log("Hello world!");
